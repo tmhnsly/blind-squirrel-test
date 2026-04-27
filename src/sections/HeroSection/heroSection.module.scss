@@ -4,6 +4,7 @@
   // Container-relative scaling for descendants outside .titleRow. cqw on
   // .subtitle resolves against the section's content-box width — same width
   // as .titleRow, so subtitle offsets and titleRow offsets share a scale.
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100dvh;
@@ -14,15 +15,104 @@
   container-type: inline-size;
 }
 
+// ── shared swoosh base ───────────────────────────────────────────
+// Each swoosh element gets:
+//   1. .swoosh                       — shared positioning model
+//   2. one of .swooshBold/.swoosh2/.swoosh3 — placement-specific knobs
+//   3. .swooshMobile or .swooshDesktop      — breakpoint visibility
+// Stack: swoosh (0) < image (1) < title (2). Swooshes paint behind every-
+// thing. Section is width: 100%, so its padding-box (the absolute-position-
+// ing reference) already starts at the viewport's left edge — left: 0 +
+// width: 100vw renders edge to edge.
+.swoosh {
+  --swoosh-x: 0cqw;
+  --swoosh-y: 0cqw;
+  --swoosh-width: 100vw;
+
+  position: absolute;
+  top: var(--swoosh-y);
+  left: var(--swoosh-x);
+  z-index: 0;
+
+  width: var(--swoosh-width);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+// ── per-instance placement knobs ─────────────────────────────────
+// Override --swoosh-x/y/width on each placement to position it.
+
+// Each placement has mobile-first defaults and a desktop override block.
+// Dial in the cqw values per breakpoint to position each swoosh.
+
+.swooshBold {
+  --swoosh-x: 0cqw;
+  --swoosh-y: -26.5cqw;
+  --swoosh-width: 100vw;
+
+  @include desktop {
+    scale: 125%;
+    --swoosh-x: -4cqw;
+    --swoosh-y: 32cqw;
+    --swoosh-width: 100vw;
+  }
+}
+
+.swooshMutedUpper {
+  --swoosh-x: 0cqw;
+  --swoosh-y: -12cqw;
+  --swoosh-width: 60cqw;
+
+  @include desktop {
+    --swoosh-x: 0cqw;
+    --swoosh-y: 0cqw;
+    --swoosh-width: 30cqw;
+  }
+}
+
+.swooshMutedLower {
+  --swoosh-x: 50cqw;
+  --swoosh-y: 80cqw;
+  --swoosh-width: 60cqw;
+
+  @include desktop {
+    --swoosh-x: 70cqw;
+    --swoosh-y: 50cqw;
+    --swoosh-width: 30cqw;
+  }
+}
+
+// ── breakpoint visibility ────────────────────────────────────────
+
+.swooshMobile {
+  @include desktop {
+    display: none;
+  }
+}
+
+.swooshDesktop {
+  display: none;
+
+  @include desktop {
+    display: block;
+  }
+}
+
 .subtitle {
   // ── tunable knobs ───────────────────────────────────────────────
-  // --subtitle-x      : left offset (cqw — % of section width).
-  // --subtitle-bottom : gap to the title row below (cqw).
-  // Font size stays in rem so the text stays a constant size while the
-  // surrounding layout scales.
+  // All position knobs in cqw (% of section width) so they track the
+  // title/image scale. Font size stays in rem so text size is constant.
+  // --subtitle-x      : left offset.
+  // --subtitle-top    : gap above (from the section's top edge).
+  // --subtitle-bottom : gap to the title row below.
   --subtitle-x: 18cqw;
+  --subtitle-top: 10cqw;
   --subtitle-bottom: 12.5cqw;
   // ────────────────────────────────────────────────────────────────
+
+  position: relative;
+  z-index: 1;
 
   font-size: 0.75rem;
   font-family: var(--font-body);
@@ -30,8 +120,8 @@
   line-height: 1;
   color: var(--color-orange);
   margin-left: var(--subtitle-x);
+  margin-top: var(--subtitle-top);
   margin-bottom: var(--subtitle-bottom);
-  margin-top: 2.25rem;
 
   max-width: 27ch;
   text-wrap: balance;
@@ -44,6 +134,14 @@
 }
 
 .titleRow {
+  // ── shared knobs hoisted here so .title can reference --image-width ──
+  --image-x: 0cqw;
+  --image-y: 12cqw;
+  --image-width: 60cqw;
+  // ─────────────────────────────────────────────────────────────────────
+
+  // No z-index: leaving this row out of the stacking context lets title
+  // and image stack against the swoosh in the section's context.
   position: relative;
   width: 100%;
   container-type: inline-size;
@@ -51,10 +149,11 @@
 
 .title {
   // ── tunable knobs (cqw = % of titleRow width) ───────────────────
+  // mobile: single-line h1 wraps "TELL BIG / TAILS" via max-width.
   // --title-x    : distance from left edge of row.
   // --title-y    : distance from top of row (negative pulls above).
-  // --title-size : font size.
-  --title-x: 5cqw;
+  // --title-size : font size for all words.
+  --title-x: 6cqw;
   --title-y: 0cqw;
   --title-size: 17cqw;
   // ────────────────────────────────────────────────────────────────
@@ -71,20 +170,51 @@
   line-height: 1;
   text-transform: uppercase;
   color: var(--color-dark);
+
+  // Mobile only: wrap "TELL BIG TAILS" into TELL BIG / TAILS.
+  max-width: 5em;
+
+  @include desktop {
+    // ── desktop knobs ─────────────────────────────────────────────
+    // Each word on its own line, right-aligned. TELL + TAILS share
+    // --title-size; BIG uses --title-size-big.
+    // --title-gap : space between title's right edge and image's left
+    //               edge (cqw — 2cqw ≈ 40px at 1920 reference).
+    --title-gap: 2cqw;
+    --title-size: 5cqw;
+    --title-size-big: 8cqw;
+    // ──────────────────────────────────────────────────────────────
+
+    // Anchor right edge to (image-left-edge - title-gap).
+    left: auto;
+    right: calc(var(--image-width) + var(--title-gap));
+    max-width: none;
+    text-align: right;
+  }
+}
+
+.word {
+  // mobile: words flow inline inside the h1 and wrap naturally.
+  display: inline;
+
+  @include desktop {
+    // desktop: each word on its own line, right-aligned by parent.
+    display: block;
+  }
+}
+
+.wordBig {
+  @include desktop {
+    font-size: var(--title-size-big);
+  }
 }
 
 .image {
-  // ── tunable knobs (cqw = % of titleRow width) ───────────────────
-  // --image-x     : distance from right edge of row (0 = flush right).
-  // --image-y     : distance from top of row.
-  // --image-width : width of image.
-  --image-x: 0cqw;
-  --image-y: 12cqw;
-  --image-width: 60cqw;
-  // ────────────────────────────────────────────────────────────────
-
   // In normal flow (not absolute) so the row's height grows to fit it
-  // exactly — no trailing gap below.
+  // exactly — no trailing gap below. position: relative is needed for
+  // z-index to apply (z-index is ignored on static elements).
+  // Knobs (--image-x / -y / -width) are inherited from .titleRow.
+  position: relative;
   display: block;
   margin-top: var(--image-y);
   margin-inline-start: auto;
@@ -106,17 +236,19 @@
 
 .links {
   margin-top: 3.125rem;
+  margin-left: calc(23px - var(--content-gutter));
   display: flex;
-  gap: 16px;
+  gap: 24px;
 
   @include desktop {
     justify-content: end;
     margin-right: 2.625rem;
+    margin-left: 0;
   }
 }
 
 .scrollIndicator {
-  --scroll-indicator-size: 48px;
+  --scroll-indicator-size: 66px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -133,5 +265,15 @@
 
   @include desktop {
     --scroll-indicator-size: 107px;
+  }
+}
+
+.scrollIndicatorIcon {
+  width: 21px;
+  height: 21px;
+
+  @include desktop {
+    width: 34px;
+    height: 34px;
   }
 }
