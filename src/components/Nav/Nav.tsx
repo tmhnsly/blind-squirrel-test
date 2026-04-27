@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { HiBars3 } from "react-icons/hi2";
 import { Button, type ButtonProps } from "@/components/Button";
 import s from "./nav.module.scss";
@@ -16,14 +15,7 @@ const links: NavLink[] = [
 const Nav = () => {
   return (
     <nav className={s.container} data-nav>
-      <Image
-        className={s.logo}
-        src="/images/brand/logo.svg"
-        alt="Logo"
-        width={192}
-        height={96}
-        style={{ width: "auto" }}
-      />
+      <img className={s.logo} src="/images/brand/logo.svg" alt="Logo" />
       <Button
         variant="solid"
         color="orange"

@@ -84,8 +84,9 @@ const HeroSection = () => {
           <Image
             src="/images/hero/hero-image.png"
             alt="Big Tails"
-            width={600}
-            height={400}
+            fill
+            sizes="60vw"
+            priority
             className={s.image}
           />
           <div className={s.imageCover} data-image-cover />
