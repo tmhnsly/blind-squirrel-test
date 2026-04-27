@@ -194,15 +194,17 @@
 
   @include desktop {
     // ── desktop knobs (cqw of titleRow — same scale family as mobile) ──
+    // Both values are cqw of the title row, so as the row widens with
+    // viewport ALL three words grow at the same rate. TELL/TAILS sit
+    // close to mobile's 17cqw so the breakpoint transition is smooth.
     // --title-size     : TELL / TAILS base size.
     // --title-size-big : BIG size; pick a ratio of --title-size.
     // --big-offset-x   : how far BIG translates right past the title
     //                    block's right edge (visual only — no effect on
-    //                    row geometry). Tune to taste — bigger value =
-    //                    BIG overlaps further into the image.
-    --title-size: 9cqw;
-    --title-size-big: 16cqw;
-    --big-offset-x: 10cqw;
+    //                    row geometry).
+    --title-size: 14cqw;
+    --title-size-big: 22cqw;
+    --big-offset-x: 8cqw;
     // ──────────────────────────────────────────────────────────────────
 
     // Title is a flex item — content-sized (sized to the widest word, BIG).
@@ -248,9 +250,10 @@
 
 // .imageCard takes over the layout role that used to live on .image. It owns
 // the position/margin/size/aspect-ratio/border-radius. The <Image> inside
-// becomes an absolute fill (object-fit: cover). This is needed so the loader
-// reveal can clip-path the whole card, and the .imageCover overlay (a dark
-// rectangle that slides up to expose the photo) can layer correctly.
+// becomes an absolute fill (object-fit: cover). The intro tween scaleY's
+// this card from ~0.04 → 1 with back.out easing — the rounded corners stay
+// throughout because they're a property of the box itself, so it reads as
+// a thin horizontal pill blooming open into a full card.
 .imageCard {
   // In normal flow (not absolute) so the row's height grows to fit it
   // exactly — no trailing gap below. Knobs (--image-x / -y / -width)
@@ -261,6 +264,8 @@
   margin-inline-start: auto;
   margin-inline-end: var(--image-x);
   z-index: 1;
+  transform-origin: center center;
+  will-change: transform;
 
   width: var(--image-width);
   max-width: 100%;

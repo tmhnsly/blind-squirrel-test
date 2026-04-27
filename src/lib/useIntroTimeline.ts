@@ -43,8 +43,8 @@ export function useIntroTimeline({
           clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
         });
         gsap.set("[data-nav]", { y: 0, opacity: 1 });
-        gsap.set("[data-heading-word]", { clipPath: "inset(0% 0 0 0)" });
-        gsap.set("[data-image-card]", { clipPath: "inset(0% 0 0 0)" });
+        gsap.set("[data-heading-word]", { clipPath: "inset(0 0 0% 0)" });
+        gsap.set("[data-image-card]", { scaleY: 1 });
         gsap.set("[data-image-cover]", { yPercent: -100 });
         gsap.set("[data-fade]", { y: 0, opacity: 1 });
         onComplete?.();
@@ -148,11 +148,15 @@ export function useIntroTimeline({
         reveal.nav.start,
       );
 
+      // Heading words clip-reveal TOP-DOWN — initial state has the bottom
+      // 100% inset, so only a thin top edge of each letter is visible at
+      // start. Tween shrinks the bottom inset to 0 → letters fill in from
+      // the top down. Staggered word-by-word.
       tl.fromTo(
         "[data-heading-word]",
-        { clipPath: "inset(100% 0 0 0)" },
+        { clipPath: "inset(0 0 100% 0)" },
         {
-          clipPath: "inset(0% 0 0 0)",
+          clipPath: "inset(0 0 0% 0)",
           duration: reveal.heading.duration,
           ease: reveal.heading.ease,
           stagger: isMobile ? 0.06 : reveal.heading.stagger,
@@ -160,11 +164,15 @@ export function useIntroTimeline({
         reveal.heading.start,
       );
 
+      // Image card "bloop" pop — scaleY from a near-flat horizontal pill
+      // (0.04) to full size (1). The card already has border-radius, so
+      // throughout the scale it reads as a rounded pill growing tall.
+      // back.out gives the subtle overshoot/pop the mp4 has.
       tl.fromTo(
         "[data-image-card]",
-        { clipPath: "inset(100% 0 0 0)" },
+        { scaleY: reveal.card.fromScaleY },
         {
-          clipPath: "inset(0% 0 0 0)",
+          scaleY: 1,
           duration: reveal.card.duration,
           ease: reveal.card.ease,
         },
