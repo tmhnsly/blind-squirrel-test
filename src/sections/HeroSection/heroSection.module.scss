@@ -1,29 +1,117 @@
 @use "theme" as *;
 
 .container {
+  // Container-relative scaling for descendants outside .titleRow. cqw on
+  // .subtitle resolves against the section's content-box width — same width
+  // as .titleRow, so subtitle offsets and titleRow offsets share a scale.
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   height: 100dvh;
   width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   padding-inline: var(--content-gutter);
-  text-align: center;
+  container-type: inline-size;
+}
+
+.subtitle {
+  // ── tunable knobs ───────────────────────────────────────────────
+  // --subtitle-x      : left offset (cqw — % of section width).
+  // --subtitle-bottom : gap to the title row below (cqw).
+  // Font size stays in rem so the text stays a constant size while the
+  // surrounding layout scales.
+  --subtitle-x: 18cqw;
+  --subtitle-bottom: 12.5cqw;
+  // ────────────────────────────────────────────────────────────────
+
+  font-size: 0.75rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-orange);
+  margin-left: var(--subtitle-x);
+  margin-bottom: var(--subtitle-bottom);
+  margin-top: 2.25rem;
+
+  max-width: 27ch;
+  text-wrap: balance;
+
+  @include desktop {
+    font-size: 1rem;
+    font-weight: 500;
+    max-width: 40ch;
+  }
+}
+
+.titleRow {
+  position: relative;
+  width: 100%;
+  container-type: inline-size;
 }
 
 .title {
-  font-size: 3.75rem;
+  // ── tunable knobs (cqw = % of titleRow width) ───────────────────
+  // --title-x    : distance from left edge of row.
+  // --title-y    : distance from top of row (negative pulls above).
+  // --title-size : font size.
+  --title-x: 5cqw;
+  --title-y: 0cqw;
+  --title-size: 17cqw;
+  // ────────────────────────────────────────────────────────────────
+
+  position: absolute;
+  top: var(--title-y);
+  left: var(--title-x);
+  z-index: 2;
+
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: var(--title-size);
   font-weight: 400;
   line-height: 1;
   text-transform: uppercase;
+  color: var(--color-dark);
 }
 
 .image {
-  max-width: 100%;
+  // ── tunable knobs (cqw = % of titleRow width) ───────────────────
+  // --image-x     : distance from right edge of row (0 = flush right).
+  // --image-y     : distance from top of row.
+  // --image-width : width of image.
+  --image-x: 0cqw;
+  --image-y: 12cqw;
+  --image-width: 60cqw;
+  // ────────────────────────────────────────────────────────────────
+
+  // In normal flow (not absolute) so the row's height grows to fit it
+  // exactly — no trailing gap below.
+  display: block;
+  margin-top: var(--image-y);
+  margin-inline-start: auto;
+  margin-inline-end: var(--image-x);
+  z-index: 1;
+
+  width: var(--image-width);
   height: auto;
+  max-width: 100%;
   border-radius: 8px;
+  aspect-ratio: 1.1 / 1;
+  object-fit: cover;
+
   @include desktop {
     border-radius: 20px;
+    aspect-ratio: 1.65 / 1;
+  }
+}
+
+.links {
+  margin-top: 3.125rem;
+  display: flex;
+  gap: 16px;
+
+  @include desktop {
+    justify-content: end;
+    margin-right: 2.625rem;
   }
 }
 
@@ -32,9 +120,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background-color: var(--color-orange-soft);
+  background-color: var(--color-honey);
   color: var(--color-cream);
   width: var(--scroll-indicator-size);
   height: var(--scroll-indicator-size);
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2.75rem;
+  margin-bottom: 3.25rem;
+
+  border-radius: 50%;
+
+  @include desktop {
+    --scroll-indicator-size: 107px;
+  }
 }

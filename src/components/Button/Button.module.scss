@@ -13,6 +13,14 @@
 
   padding: 0.75em 1.5em;
   border: 0;
+
+  &:has(> .icon:last-child) {
+    padding-inline-end: 0.975rem; // 15.6px
+
+    @include desktop {
+      padding-inline-end: 1.1875rem; // 19px
+    }
+  }
   background: transparent;
   color: inherit;
   cursor: pointer;

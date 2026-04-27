@@ -6,11 +6,11 @@ import s from "./heroSection.module.scss";
 const HeroSection = () => {
   return (
     <section className={s.container}>
-      <p>
+      <p className={s.subtitle}>
         Lorem ipsum dolor sit amet, consectetur. Vestibulum fringilla est in
         mauris auctor,
       </p>
-      <div>
+      <div className={s.titleRow}>
         <h1 className={s.title}>Tell Big Tails</h1>
         <Image
           src="/images/hero/hero-image.png"
@@ -20,7 +20,7 @@ const HeroSection = () => {
           className={s.image}
         />
       </div>
-      <div>
+      <div className={s.links}>
         <Button variant="outline" color="orange" iconRight={<HiArrowRight />}>
           Learn more
         </Button>

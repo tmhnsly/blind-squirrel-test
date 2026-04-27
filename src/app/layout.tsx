@@ -1,6 +1,7 @@
 import { Inter, Manrope } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.scss";
+import Nav from "@/components/Nav/Nav";
 
 const fatFrank = localFont({
   src: "./fonts/FatFrank.otf",
@@ -32,7 +33,10 @@ export default function RootLayout({
       lang="en"
       className={`${fatFrank.variable} ${inter.variable} ${manrope.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <Nav />
+        {children}
+      </body>
     </html>
   );
 }

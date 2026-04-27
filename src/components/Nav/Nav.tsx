@@ -1,21 +1,44 @@
 import Image from "next/image";
+import { HiBars3 } from "react-icons/hi2";
+import { Button, type ButtonProps } from "@/components/Button";
 import s from "./nav.module.scss";
+
+type NavLink = Pick<ButtonProps, "variant" | "color"> & { label: string };
+
+const links: NavLink[] = [
+  { label: "About", variant: "ghost", color: "dark" },
+  { label: "Projects", variant: "ghost", color: "dark" },
+  { label: "Careers", variant: "ghost", color: "dark" },
+  { label: "News", variant: "ghost", color: "dark" },
+  { label: "Contact Us", variant: "solid", color: "orange" },
+];
 
 const Nav = () => {
   return (
-    <nav>
+    <nav className={s.container}>
       <Image
         className={s.logo}
-        src="/logo.png"
+        src="/images/brand/logo.svg"
         alt="Logo"
         width={192}
         height={96}
       />
-      <ul>
-        <li>About</li>
-        <li>Projects</li>
-        <li>Careers</li>
-        <li>News</li>
+      <Button
+        variant="solid"
+        color="orange"
+        className={s.burger}
+        aria-label="Open menu"
+      >
+        <HiBars3 size={16} />
+      </Button>
+      <ul className={s.links}>
+        {links.map((link) => (
+          <li key={link.label}>
+            <Button variant={link.variant} color={link.color}>
+              {link.label}
+            </Button>
+          </li>
+        ))}
       </ul>
     </nav>
   );
