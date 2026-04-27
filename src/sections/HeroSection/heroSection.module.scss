@@ -60,7 +60,7 @@
 
   @include desktop {
     --swoosh-x: 0cqw;
-    --swoosh-y: 6.5cqw;
+    --swoosh-y: 30cqw;
     --swoosh-width: 100vw;
   }
 }
@@ -139,6 +139,7 @@
     max-width: 40ch;
     --subtitle-x: 50cqw;
     margin-bottom: 60px;
+    --subtitle-top: 50px;
   }
 }
 
