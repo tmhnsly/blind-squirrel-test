@@ -38,8 +38,8 @@ public/images/         logo, hero photo, swoosh SVGs
 
 ## Notes
 
-- Next version has breaking changes — prefer `node_modules/next/dist/docs/`
-  over outside references. See `AGENTS.md`.
+- Next version has breaking changes vs older docs — prefer the local
+  `node_modules/next/dist/docs/` over outside references.
 - All intro timings live in `src/lib/animationConfig.ts`.
 - Shared swoosh placement vars in `src/styles/theme/_layout.scss` keep the
   loader and hero swooshes pixel-aligned.
