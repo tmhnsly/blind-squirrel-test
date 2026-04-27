@@ -13,6 +13,13 @@
   margin-right: auto;
   padding-inline: var(--content-gutter);
   container-type: inline-size;
+
+  @include desktop {
+    // Linear interpolation: 27px @ 680 → 310px @ 1920.
+    // Avoids the cliff where padding would jump from 16px (mobile gutter)
+    // straight to 16.15vw (110px) at the breakpoint and shrink the row.
+    padding-inline: calc(22.8vw - 128px);
+  }
 }
 
 // ── shared swoosh base ───────────────────────────────────────────
@@ -52,9 +59,8 @@
   --swoosh-width: 100vw;
 
   @include desktop {
-    scale: 125%;
-    --swoosh-x: -4cqw;
-    --swoosh-y: 32cqw;
+    --swoosh-x: 0cqw;
+    --swoosh-y: 6.5cqw;
     --swoosh-width: 100vw;
   }
 }
@@ -65,8 +71,8 @@
   --swoosh-width: 60cqw;
 
   @include desktop {
-    --swoosh-x: 0cqw;
-    --swoosh-y: 0cqw;
+    --swoosh-x: 20cqw;
+    --swoosh-y: -17cqw;
     --swoosh-width: 30cqw;
   }
 }
@@ -101,27 +107,28 @@
 
 .subtitle {
   // ── tunable knobs ───────────────────────────────────────────────
-  // All position knobs in cqw (% of section width) so they track the
-  // title/image scale. Font size stays in rem so text size is constant.
-  // --subtitle-x      : left offset.
-  // --subtitle-top    : gap above (from the section's top edge).
-  // --subtitle-bottom : gap to the title row below.
+  // Position in cqw so it tracks the title/image scale. Font size in
+  // rem so text size is constant. Absolute positioning means the
+  // subtitle adds no vertical space to the flex flow — it just
+  // floats at (subtitle-x, subtitle-top) and scales with the layout.
+  // --subtitle-x   : left offset.
+  // --subtitle-top : top offset.
   --subtitle-x: 18cqw;
   --subtitle-top: 10cqw;
-  --subtitle-bottom: 12.5cqw;
   // ────────────────────────────────────────────────────────────────
 
+  // In flex flow so it takes its own intrinsic height (no overlap with
+  // the title row). The cqw values become margins so they only control
+  // offset — no extra padding is added.
   position: relative;
   z-index: 1;
+  margin: var(--subtitle-top) 0 0 var(--subtitle-x);
 
   font-size: 0.75rem;
   font-family: var(--font-body);
   font-weight: 600;
   line-height: 1;
   color: var(--color-orange);
-  margin-left: var(--subtitle-x);
-  margin-top: var(--subtitle-top);
-  margin-bottom: var(--subtitle-bottom);
 
   max-width: 27ch;
   text-wrap: balance;
@@ -130,6 +137,8 @@
     font-size: 1rem;
     font-weight: 500;
     max-width: 40ch;
+    --subtitle-x: 50cqw;
+    margin-bottom: 60px;
   }
 }
 
@@ -145,6 +154,18 @@
   position: relative;
   width: 100%;
   container-type: inline-size;
+
+  @include desktop {
+    // Flex centers title against image vertically. Because the title is
+    // symmetric (TELL + BIG + TAILS, equal sizes top/bottom), its centre
+    // = BIG's centre, so BIG ends up dead-on the image's vertical centre.
+    // Default justify-content (flex-start) + flex:1 on the title makes
+    // the title fill the left side; image stays its fixed --image-width
+    // on the right; gap enforces the 40px-at-1920 spacing.
+    display: flex;
+    align-items: center;
+    gap: var(--title-gap, 2.08vw);
+  }
 }
 
 .title {
@@ -176,18 +197,23 @@
 
   @include desktop {
     // ── desktop knobs ─────────────────────────────────────────────
-    // Each word on its own line, right-aligned. TELL + TAILS share
-    // --title-size; BIG uses --title-size-big.
-    // --title-gap : space between title's right edge and image's left
-    //               edge (cqw — 2cqw ≈ 40px at 1920 reference).
-    --title-gap: 2cqw;
-    --title-size: 5cqw;
-    --title-size-big: 8cqw;
+    // Linear interpolation calc(a·vw + b·px) so the size ramps
+    // smoothly from the mobile-end value (≈110px at 680) up to the
+    // 1920 spec — no cliff at the breakpoint.
+    //   --title-size:     110px @ 680 → 118px @ 1920  (TELL/TAILS)
+    //   --title-size-big: 110px @ 680 → 206px @ 1920  (BIG)
+    //   --title-gap:       16px @ 680 →  40px @ 1920  (.titleRow gap)
+    --title-size: calc(0.645vw + 105.6px);
+    --title-size-big: calc(7.74vw + 57.4px);
+    --title-gap: calc(1.935vw + 2.84px);
     // ──────────────────────────────────────────────────────────────
 
-    // Anchor right edge to (image-left-edge - title-gap).
-    left: auto;
-    right: calc(var(--image-width) + var(--title-gap));
+    // Static positioning — title is a flex item in .titleRow, vertically
+    // centred against the image. flex: 1 makes it fill the left side so
+    // its right edge sits a (--title-gap) gap from the image's left edge.
+    // text-align: right then right-aligns TELL/TAILS within that box.
+    position: static;
+    flex: 1;
     max-width: none;
     text-align: right;
   }
@@ -229,6 +255,10 @@
   object-fit: cover;
 
   @include desktop {
+    // titleRow becomes flex on desktop — vertical centring handled
+    // there, so margin-top isn't needed (would offset image off-centre).
+    margin-top: 0;
+    margin-inline-start: 0;
     border-radius: 20px;
     aspect-ratio: 1.65 / 1;
   }

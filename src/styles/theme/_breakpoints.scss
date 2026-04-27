@@ -1,12 +1,4 @@
-// Breakpoint tokens. Single source of truth for responsive cutoffs across
-// every SCSS module. Keep in sync with src/lib/breakpoints.ts (the JS-side
-// equivalent used by useIntroTimeline + any other window.matchMedia call).
-//
-// Values chosen so iPad portrait (768px) and up land in the DESKTOP bucket.
-// 42.5rem = 680px covers all phone sizes (largest is ~430px) with breathing
-// room above for narrow-window desktop, and stops short of any tablet layout.
-
-$breakpoint-mobile-max: 42.5rem;
+$breakpoint-mobile-max: 768px;
 
 @mixin mobile {
   @media (max-width: $breakpoint-mobile-max) {
