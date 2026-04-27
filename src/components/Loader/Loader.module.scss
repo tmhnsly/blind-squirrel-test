@@ -1,0 +1,128 @@
+@use "theme" as *;
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.drawer {
+  position: absolute;
+  inset: 0;
+  background: var(--color-orange);
+  overflow: hidden;
+  will-change: transform, border-radius;
+}
+
+.swooshMask {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+// Mirrors the hero section's .container positioning context (same width +
+// padding-inline + container-type), so cqw inside resolves to the same value
+// as cqw inside the page's .swoosh.swooshBold. The top: var(--nav-height)
+// offset matches the page section's vertical start (below Nav) so swoosh-y
+// values resolve to the same screen Y as the page's.
+.swooshContext {
+  position: absolute;
+  top: var(--nav-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-inline: var(--content-gutter);
+  container-type: inline-size;
+
+  @include desktop {
+    padding-inline: calc(22.8vw - 128px);
+  }
+}
+
+// Same shape rules as the page's .swoosh (positioning model only).
+.swoosh {
+  --swoosh-x: 0cqw;
+  --swoosh-y: 0cqw;
+  --swoosh-width: 100vw;
+
+  position: absolute;
+  top: var(--swoosh-y);
+  left: var(--swoosh-x);
+
+  width: var(--swoosh-width);
+  pointer-events: none;
+  user-select: none;
+  will-change: clip-path;
+  // First-paint state — degenerate polygon collapsed to the left edge
+  // (zero area). GSAP interpolates the four vertices linearly into the
+  // full rectangle, producing a clean left-to-right wipe-on. Polygon
+  // vertices animate more reliably than inset() shorthand.
+  clip-path: polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%);
+
+  // Recolouring trick: SVG used as a mask, the box itself is a coloured
+  // rectangle. Result = the swoosh shape filled with --color-orange-soft.
+  background-color: var(--color-orange-soft);
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+}
+
+// Reads the same :root vars (in theme/_layout.scss) as the page's .swooshBold,
+// so the loader and page swoosh stay in sync as the user tweaks placement.
+.swooshBold {
+  --swoosh-x: var(--swoosh-bold-x);
+  --swoosh-y: var(--swoosh-bold-y);
+  --swoosh-width: var(--swoosh-bold-width);
+}
+
+// Breakpoint visibility + per-breakpoint mask file + intrinsic aspect.
+// aspect-ratio numbers must match each SVG's viewBox (same as the
+// width/height attrs on the page's <Image>) so the box height is correct.
+.swooshMobile {
+  aspect-ratio: 1080 / 800;
+  mask-image: url("/images/swooshes/bold-mobile.svg");
+  -webkit-mask-image: url("/images/swooshes/bold-mobile.svg");
+
+  @include desktop {
+    display: none;
+  }
+}
+
+.swooshDesktop {
+  display: none;
+  aspect-ratio: 1920 / 800;
+  mask-image: url("/images/swooshes/bold-middle.svg");
+  -webkit-mask-image: url("/images/swooshes/bold-middle.svg");
+
+  @include desktop {
+    display: block;
+  }
+}
+
+.counterWrap {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.05em;
+
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(2.5rem, 5.5vw, 6rem);
+  color: var(--color-cream);
+
+  will-change: transform;
+}
+
+.counter {
+  font-variant-numeric: tabular-nums;
+  min-width: 2.4ch;
+  text-align: right;
+}
+
+.percent {
+  font-variant-numeric: tabular-nums;
+}

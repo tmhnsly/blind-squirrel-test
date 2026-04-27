@@ -57,25 +57,40 @@ const HeroSection = () => {
         height={300}
         aria-hidden
       />
-      <p className={s.subtitle}>
+      <p className={s.subtitle} data-fade>
         Lorem ipsum dolor sit amet, consectetur. Vestibulum fringilla est in
         mauris auctor,
       </p>
       <div className={s.titleRow}>
         <h1 className={s.title}>
-          <span className={`${s.word} ${s.wordTell}`}>Tell</span>{" "}
-          <span className={`${s.word} ${s.wordBig}`}>Big</span>{" "}
-          <span className={`${s.word} ${s.wordTails}`}>Tails</span>
+          <span className={`${s.word} ${s.wordTell}`}>
+            <span className={s.wordInner} data-heading-word>
+              Tell
+            </span>
+          </span>{" "}
+          <span className={`${s.word} ${s.wordBig}`}>
+            <span className={s.wordInner} data-heading-word>
+              Big
+            </span>
+          </span>{" "}
+          <span className={`${s.word} ${s.wordTails}`}>
+            <span className={s.wordInner} data-heading-word>
+              Tails
+            </span>
+          </span>
         </h1>
-        <Image
-          src="/images/hero/hero-image.png"
-          alt="Big Tails"
-          width={600}
-          height={400}
-          className={s.image}
-        />
+        <div className={s.imageCard} data-image-card>
+          <Image
+            src="/images/hero/hero-image.png"
+            alt="Big Tails"
+            width={600}
+            height={400}
+            className={s.image}
+          />
+          <div className={s.imageCover} data-image-cover />
+        </div>
       </div>
-      <div className={s.links}>
+      <div className={s.links} data-fade>
         <Button variant="outline" color="orange" iconRight={<HiArrowRight />}>
           Learn more
         </Button>
@@ -83,7 +98,7 @@ const HeroSection = () => {
           Contact us
         </Button>
       </div>
-      <div className={s.scrollIndicator}>
+      <div className={s.scrollIndicator} data-fade>
         <HiArrowDown className={s.scrollIndicatorIcon} />
       </div>
     </section>

@@ -2,6 +2,8 @@ import { Inter, Manrope } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.scss";
 import Nav from "@/components/Nav/Nav";
+import { Loader } from "@/components/Loader";
+import { MotionScope } from "@/components/MotionScope";
 
 const fatFrank = localFont({
   src: "./fonts/FatFrank.otf",
@@ -33,9 +35,10 @@ export default function RootLayout({
       lang="en"
       className={`${fatFrank.variable} ${inter.variable} ${manrope.variable}`}
     >
-      <body>
-        <Nav />
-        {children}
+      <body className="is-loading">
+        <MotionScope nav={<Nav />} loader={<Loader />}>
+          {children}
+        </MotionScope>
       </body>
     </html>
   );

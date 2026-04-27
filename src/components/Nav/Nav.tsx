@@ -15,7 +15,7 @@ const links: NavLink[] = [
 
 const Nav = () => {
   return (
-    <nav className={s.container}>
+    <nav className={s.container} data-nav>
       <Image
         className={s.logo}
         src="/images/brand/logo.svg"

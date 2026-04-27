@@ -54,15 +54,11 @@
 // Dial in the cqw values per breakpoint to position each swoosh.
 
 .swooshBold {
-  --swoosh-x: 0cqw;
-  --swoosh-y: -26.5cqw;
-  --swoosh-width: 100vw;
-
-  @include desktop {
-    --swoosh-x: 0cqw;
-    --swoosh-y: 30cqw;
-    --swoosh-width: 100vw;
-  }
+  // Bold-middle swoosh placement is sourced from :root vars in
+  // theme/_layout.scss. Editing those keeps the loader's swoosh in sync.
+  --swoosh-x: var(--swoosh-bold-x);
+  --swoosh-y: var(--swoosh-bold-y);
+  --swoosh-width: var(--swoosh-bold-width);
 }
 
 .swooshMutedUpper {
@@ -71,8 +67,8 @@
   --swoosh-width: 60cqw;
 
   @include desktop {
-    --swoosh-x: 20cqw;
-    --swoosh-y: -17cqw;
+    --swoosh-x: 25cqw;
+    --swoosh-y: -20cqw;
     --swoosh-width: 30cqw;
   }
 }
@@ -83,8 +79,8 @@
   --swoosh-width: 60cqw;
 
   @include desktop {
-    --swoosh-x: 70cqw;
-    --swoosh-y: 50cqw;
+    --swoosh-x: 106cqw;
+    --swoosh-y: 65cqw;
     --swoosh-width: 30cqw;
   }
 }
@@ -157,15 +153,15 @@
   container-type: inline-size;
 
   @include desktop {
-    // Flex centers title against image vertically. Because the title is
-    // symmetric (TELL + BIG + TAILS, equal sizes top/bottom), its centre
-    // = BIG's centre, so BIG ends up dead-on the image's vertical centre.
-    // Default justify-content (flex-start) + flex:1 on the title makes
-    // the title fill the left side; image stays its fixed --image-width
-    // on the right; gap enforces the 40px-at-1920 spacing.
+    // Flex centers title against image vertically AND centres the title +
+    // image pair horizontally inside the content area. Title is content-
+    // sized (no flex:1) so the composition stays compact + centred rather
+    // than spreading to fill the gutters.
+    --title-gap: 2cqw;
     display: flex;
     align-items: center;
-    gap: var(--title-gap, 2.08vw);
+    justify-content: center;
+    gap: var(--title-gap);
   }
 }
 
@@ -197,24 +193,24 @@
   max-width: 5em;
 
   @include desktop {
-    // ── desktop knobs ─────────────────────────────────────────────
-    // Linear interpolation calc(a·vw + b·px) so the size ramps
-    // smoothly from the mobile-end value (≈110px at 680) up to the
-    // 1920 spec — no cliff at the breakpoint.
-    //   --title-size:     110px @ 680 → 118px @ 1920  (TELL/TAILS)
-    //   --title-size-big: 110px @ 680 → 206px @ 1920  (BIG)
-    //   --title-gap:       16px @ 680 →  40px @ 1920  (.titleRow gap)
-    --title-size: calc(0.645vw + 105.6px);
-    --title-size-big: calc(7.74vw + 57.4px);
-    --title-gap: calc(1.935vw + 2.84px);
-    // ──────────────────────────────────────────────────────────────
+    // ── desktop knobs (cqw of titleRow — same scale family as mobile) ──
+    // --title-size     : TELL / TAILS base size.
+    // --title-size-big : BIG size; pick a ratio of --title-size.
+    // --big-offset-x   : how far BIG translates right past the title
+    //                    block's right edge (visual only — no effect on
+    //                    row geometry). Tune to taste — bigger value =
+    //                    BIG overlaps further into the image.
+    --title-size: 9cqw;
+    --title-size-big: 16cqw;
+    --big-offset-x: 10cqw;
+    // ──────────────────────────────────────────────────────────────────
 
-    // Static positioning — title is a flex item in .titleRow, vertically
-    // centred against the image. flex: 1 makes it fill the left side so
-    // its right edge sits a (--title-gap) gap from the image's left edge.
-    // text-align: right then right-aligns TELL/TAILS within that box.
+    // Title is a flex item — content-sized (sized to the widest word, BIG).
+    // titleRow's justify-content: center centres title+image as a pair.
+    // text-align: right pins TELL/TAILS' right edges next to the image
+    // (with --title-gap between). BIG translates right past that line to
+    // overlap the image without pushing the layout.
     position: static;
-    flex: 1;
     max-width: none;
     text-align: right;
   }
@@ -226,21 +222,39 @@
 
   @include desktop {
     // desktop: each word on its own line, right-aligned by parent.
+    // line-height < 1 tightens the vertical gap between TELL/BIG/TAILS.
+    // Tune to taste (0.85 = noticeably tight, 1 = font default).
     display: block;
+    line-height: 0.9;
   }
+}
+
+// Inner span exists so clip-path can apply to a non-inline element (clip-path
+// doesn't work on inline text). The reveal animation tweens this from
+// inset(100% 0 0 0) → inset(0% 0 0 0).
+.wordInner {
+  display: inline-block;
+  will-change: clip-path;
 }
 
 .wordBig {
   @include desktop {
     font-size: var(--title-size-big);
+    // Visual-only offset right so BIG extends past TELL/TAILS' right edge
+    // and overlaps the image. Doesn't affect title block width or row flow.
+    translate: var(--big-offset-x) 0;
   }
 }
 
-.image {
+// .imageCard takes over the layout role that used to live on .image. It owns
+// the position/margin/size/aspect-ratio/border-radius. The <Image> inside
+// becomes an absolute fill (object-fit: cover). This is needed so the loader
+// reveal can clip-path the whole card, and the .imageCover overlay (a dark
+// rectangle that slides up to expose the photo) can layer correctly.
+.imageCard {
   // In normal flow (not absolute) so the row's height grows to fit it
-  // exactly — no trailing gap below. position: relative is needed for
-  // z-index to apply (z-index is ignored on static elements).
-  // Knobs (--image-x / -y / -width) are inherited from .titleRow.
+  // exactly — no trailing gap below. Knobs (--image-x / -y / -width)
+  // inherited from .titleRow.
   position: relative;
   display: block;
   margin-top: var(--image-y);
@@ -249,11 +263,11 @@
   z-index: 1;
 
   width: var(--image-width);
-  height: auto;
   max-width: 100%;
   border-radius: 8px;
   aspect-ratio: 1.1 / 1;
-  object-fit: cover;
+  overflow: hidden;
+  background: var(--color-dark);
 
   @include desktop {
     // titleRow becomes flex on desktop — vertical centring handled
@@ -263,6 +277,25 @@
     border-radius: 20px;
     aspect-ratio: 1.65 / 1;
   }
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageCover {
+  // Dark overlay that fills the card. Tweened up (yPercent: -100) during
+  // the reveal phase to expose the photo underneath. Inherits the card's
+  // border-radius via overflow: hidden on the parent.
+  position: absolute;
+  inset: 0;
+  background: var(--color-dark);
+  pointer-events: none;
+  will-change: transform;
 }
 
 .links {

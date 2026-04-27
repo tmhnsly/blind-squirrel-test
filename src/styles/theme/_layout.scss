@@ -10,11 +10,33 @@
 
   --hero-max-width: 120rem;
   --design-frame: 1920;
-  --nav-height: 5rem;
+
+  // Nav height — the actual rendered height of <nav>. The loader uses this
+  // to offset its swoosh-context so the loader-swoosh and page-swoosh
+  // share the same screen Y coord. If Nav's height changes, update here.
+  --nav-height: 3.5rem; // mobile: 8px padding-top + 48px logo
+
+  // ── shared swoosh placement (single source of truth) ────────────
+  // Both the hero (.swooshBold) and the loader (.swooshBold) read these.
+  // Tweak here once → page + loader stay in sync. cqw resolves at the
+  // consuming element's container, so values are unitless tokens that
+  // scale to whichever container they're used in.
+  --swoosh-bold-x: 0cqw;
+  --swoosh-bold-y: -26.5cqw;
+  --swoosh-bold-width: 100vw;
 }
 
 @include mobile {
   :root {
     --design-frame: 360;
+  }
+}
+
+@include desktop {
+  :root {
+    --nav-height: 6.5rem; // desktop: 8px padding-top + 96px logo
+
+    // Desktop overrides for the shared swoosh placement.
+    --swoosh-bold-y: 30cqw;
   }
 }
