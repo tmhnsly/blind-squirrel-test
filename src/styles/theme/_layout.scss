@@ -1,0 +1,20 @@
+@use "breakpoints" as *;
+
+:root {
+  // Content / text / gutter margin. Mobile spec 16px, desktop spec 21.26px
+  // → rounded to the nearest whole rem (1rem = 16px) for a consistent value
+  // across breakpoints.
+  --content-gutter: 1rem;
+  --text-gutter: var(--content-gutter);
+  --page-gutter: var(--content-gutter);
+
+  --hero-max-width: 120rem;
+  --design-frame: 1920;
+  --nav-height: 5rem;
+}
+
+@include mobile {
+  :root {
+    --design-frame: 360;
+  }
+}

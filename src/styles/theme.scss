@@ -1,0 +1,8 @@
+// Main theme entry point.
+// Forward partials from ./theme/ as they are added.
+// Consumers use with: @use "theme" as *;
+
+@forward "theme/colors";
+@forward "theme/layers";
+@forward "theme/layout";
+@forward "theme/breakpoints";

@@ -1,0 +1,10 @@
+@use "theme" as *;
+
+.logo {
+  height: 48px;
+  width: auto;
+
+  @include desktop {
+    height: 96px;
+  }
+}

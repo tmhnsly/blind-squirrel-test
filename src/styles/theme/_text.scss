@@ -1,0 +1,38 @@
+// Text style tokens. Each style is a mixin that bundles font-family + weight
+// + size + line-height + letter-spacing + casing. Components opt into a style
+// with `@include text.<style>;` rather than restating the property stack
+// inline.
+//
+// Import in modules with:
+//   @use "theme/text" as text;
+//   .foo { @include text.body; }
+//
+// Font family CSS vars come from src/app/layout.tsx (next/font binding):
+//   --font-display — FatFrank, brand display
+//   --font-nav     — Inter Medium 500, UI labels
+//   --font-body    — Manrope Medium 500, body copy
+
+@mixin display {
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+
+// Nav link / UI label. Spec: Inter Medium 500, 16px, line-height 100%,
+// letter-spacing 0%, uppercase.
+@mixin nav {
+  font-family: var(--font-nav), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+// Body copy / lede. Spec: Manrope Medium 500, 16px, line-height 100%,
+// letter-spacing 0px.
+@mixin body {
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: 0;
+}

@@ -1,0 +1,9 @@
+// Layer manifest. Single source of truth for stacking order across the app.
+// Edit here when adding a new layer; never write a raw z-index in a component.
+:root {
+  --z-base: 0;
+  --z-decor: 1;
+  --z-nav: 100;
+  --z-replay: 900;
+  --z-loader: 1000;
+}

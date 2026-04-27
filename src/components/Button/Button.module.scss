@@ -1,0 +1,102 @@
+@use "theme" as *;
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  padding: 0.75em 1.5em;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  transition:
+    opacity 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  &:hover:not(:disabled) {
+    opacity: 0.8;
+  }
+}
+
+// Colour hooks — each sets the accent and the contrast colour for solid fills.
+.button[data-color="orange"] {
+  --button-accent: var(--color-orange);
+  --button-contrast: var(--color-cream);
+}
+
+.button[data-color="honey"] {
+  --button-accent: var(--color-honey);
+  --button-contrast: var(--color-dark);
+}
+
+.button[data-color="dark"] {
+  --button-accent: var(--color-dark);
+  --button-contrast: var(--color-cream);
+}
+
+.button[data-color="cream"] {
+  --button-accent: var(--color-cream);
+  --button-contrast: var(--color-dark);
+}
+
+// Variants — all consume the colour hooks above.
+.button[data-variant="solid"] {
+  background: var(--button-accent);
+  color: var(--button-contrast);
+  border-radius: 999px;
+}
+
+.button[data-variant="outline"] {
+  color: var(--button-accent);
+  border: 1px solid var(--button-accent);
+  border-radius: 999px;
+}
+
+.button[data-variant="ghost"] {
+  color: var(--button-accent);
+  padding-inline: 0.5em;
+}
+
+.button[data-variant="underline"] {
+  color: var(--button-accent);
+  padding-inline: 0;
+  text-decoration: underline;
+  text-underline-offset: 0.35em;
+  text-decoration-thickness: 2px;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.label {
+  display: inline-block;
+}
