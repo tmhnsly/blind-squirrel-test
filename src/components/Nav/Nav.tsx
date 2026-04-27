@@ -22,6 +22,7 @@ const Nav = () => {
         alt="Logo"
         width={192}
         height={96}
+        style={{ width: "auto" }}
       />
       <Button
         variant="solid"

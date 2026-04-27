@@ -6,24 +6,26 @@ import s from "./heroSection.module.scss";
 const HeroSection = () => {
   return (
     <section className={s.container}>
-      {/* Swoosh 1: bold middle */}
+      {/* width / height props MUST match each SVG's viewBox so the
+          intrinsic aspect ratio used for layout matches the loader copy. */}
       <Image
         className={`${s.swoosh} ${s.swooshBold} ${s.swooshMobile}`}
         src="/images/swooshes/bold-mobile.svg"
         alt=""
-        width={1080}
-        height={800}
+        width={360}
+        height={503}
         aria-hidden
+        priority
       />
       <Image
         className={`${s.swoosh} ${s.swooshBold} ${s.swooshDesktop}`}
         src="/images/swooshes/bold-middle.svg"
         alt=""
         width={1920}
-        height={800}
+        height={546}
         aria-hidden
+        priority
       />
-      {/* Swoosh: muted upper */}
       <Image
         className={`${s.swoosh} ${s.swooshMutedUpper} ${s.swooshMobile}`}
         src="/images/swooshes/muted-upper-mobile.svg"
@@ -40,7 +42,6 @@ const HeroSection = () => {
         height={300}
         aria-hidden
       />
-      {/* Swoosh: muted lower */}
       <Image
         className={`${s.swoosh} ${s.swooshMutedLower} ${s.swooshMobile}`}
         src="/images/swooshes/muted-lower-mobile.svg"

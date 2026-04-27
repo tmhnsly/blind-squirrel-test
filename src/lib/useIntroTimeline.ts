@@ -10,11 +10,9 @@ interface UseIntroTimelineOptions {
   onComplete?: () => void;
 }
 
-// Master intro timeline. Selectors are scoped to scopeRef.
-// Replayability: every animatable tween uses .fromTo so explicit from-values
-// re-apply on .restart(). The from-values double as the page's pre-intro
-// state (applied as soon as the tween is added), so first paint already has
-// nav/title/image/fade items hidden.
+// Every animatable tween uses .fromTo so explicit from-values re-apply on
+// .restart() — the from-values double as the page's pre-intro state, so
+// first paint already has nav/title/image/fade items hidden.
 export function useIntroTimeline({
   scopeRef,
   onComplete,
@@ -39,9 +37,7 @@ export function useIntroTimeline({
         });
         gsap.set("[data-loader-swoosh-mask]", { yPercent: 100 });
         gsap.set("[data-loader-counter-wrap]", { yPercent: 100 });
-        gsap.set("[data-loader-swoosh]", {
-          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-        });
+        gsap.set("[data-loader-swoosh]", { clipPath: "inset(0 0% 0 0)" });
         gsap.set("[data-nav]", { y: 0, opacity: 1 });
         gsap.set("[data-heading-word]", { clipPath: "inset(0 0 0% 0)" });
         gsap.set("[data-image-card]", { scaleY: 1 });
@@ -75,15 +71,13 @@ export function useIntroTimeline({
         "load",
       );
 
-      // Swoosh "draws on" left-to-right by interpolating a clip-path
-      // polygon's right two vertices from x=0% (collapsed) to x=100%
-      // (full rect). GSAP interpolates each polygon vertex linearly,
-      // which produces a reliable left-to-right wipe across browsers.
+      // Only the right inset moves (top/bottom/left stay at 0), so the clip
+      // rect is always full-height and the stroke thickness stays uniform.
       tl.fromTo(
         "[data-loader-swoosh]",
-        { clipPath: "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)" },
+        { clipPath: "inset(0 100% 0 0)" },
         {
-          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+          clipPath: "inset(0 0% 0 0)",
           duration: INTRO_TIMINGS.load.swoosh.duration,
           ease: INTRO_TIMINGS.load.swoosh.ease,
         },
@@ -94,8 +88,6 @@ export function useIntroTimeline({
       const exit = INTRO_TIMINGS.exit.drawer;
       tl.addLabel("exit", exit.start);
 
-      // Drawer corners round in faster than the slide so the rounded shape
-      // is visible the moment the slide begins (matches the mp4 reference).
       tl.fromTo(
         "[data-loader-drawer]",
         { borderRadius: "0px" },
@@ -107,13 +99,12 @@ export function useIntroTimeline({
         "exit",
       );
 
-      // Counter-translate trick: drawer translates UP, mask + counter-wrap
-      // (children of drawer) translate DOWN by equal amount. Translates
-      // cancel — swoosh + counter stay screen-anchored — and the drawer's
-      // overflow:hidden clips them away. The hero's swoosh underneath at
-      // identical screen coords reads through as a colour shift.
-      // Three tweens MUST share identical duration + ease — drift = visible
-      // jiggle of the swoosh + counter mid-slide.
+      // Drawer goes UP, mask + counter-wrap (children of drawer) go DOWN by
+      // the same amount → swoosh + counter stay screen-anchored while the
+      // drawer's overflow:hidden clips them. The hero's swoosh underneath
+      // sits at the same screen coords and reads through as a colour shift.
+      // The three tweens MUST share identical duration + ease — any drift
+      // shows as a visible jiggle of the swoosh / counter mid-slide.
       tl.fromTo(
         "[data-loader-drawer]",
         { yPercent: 0 },
@@ -148,10 +139,6 @@ export function useIntroTimeline({
         reveal.nav.start,
       );
 
-      // Heading words clip-reveal TOP-DOWN — initial state has the bottom
-      // 100% inset, so only a thin top edge of each letter is visible at
-      // start. Tween shrinks the bottom inset to 0 → letters fill in from
-      // the top down. Staggered word-by-word.
       tl.fromTo(
         "[data-heading-word]",
         { clipPath: "inset(0 0 100% 0)" },
@@ -164,10 +151,6 @@ export function useIntroTimeline({
         reveal.heading.start,
       );
 
-      // Image card "bloop" pop — scaleY from a near-flat horizontal pill
-      // (0.04) to full size (1). The card already has border-radius, so
-      // throughout the scale it reads as a rounded pill growing tall.
-      // back.out gives the subtle overshoot/pop the mp4 has.
       tl.fromTo(
         "[data-image-card]",
         { scaleY: reveal.card.fromScaleY },

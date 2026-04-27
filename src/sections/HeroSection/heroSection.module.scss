@@ -1,9 +1,6 @@
 @use "theme" as *;
 
 .container {
-  // Container-relative scaling for descendants outside .titleRow. cqw on
-  // .subtitle resolves against the section's content-box width — same width
-  // as .titleRow, so subtitle offsets and titleRow offsets share a scale.
   position: relative;
   display: flex;
   flex-direction: column;
@@ -12,25 +9,23 @@
   margin-left: auto;
   margin-right: auto;
   padding-inline: var(--content-gutter);
+  // container-type so cqw inside resolves against the section's content-box
+  // width — same width that the loader's swooshContext uses, keeping the
+  // two swooshes pixel-aligned.
   container-type: inline-size;
 
   @include desktop {
-    // Linear interpolation: 27px @ 680 → 310px @ 1920.
-    // Avoids the cliff where padding would jump from 16px (mobile gutter)
-    // straight to 16.15vw (110px) at the breakpoint and shrink the row.
+    // Linear scale 27px @ 680 → 310px @ 1920. Avoids the cliff where padding
+    // would jump from 16px (mobile) to 16.15vw (~110px) at the breakpoint.
     padding-inline: calc(22.8vw - 128px);
   }
 }
 
-// ── shared swoosh base ───────────────────────────────────────────
 // Each swoosh element gets:
-//   1. .swoosh                       — shared positioning model
-//   2. one of .swooshBold/.swoosh2/.swoosh3 — placement-specific knobs
-//   3. .swooshMobile or .swooshDesktop      — breakpoint visibility
-// Stack: swoosh (0) < image (1) < title (2). Swooshes paint behind every-
-// thing. Section is width: 100%, so its padding-box (the absolute-position-
-// ing reference) already starts at the viewport's left edge — left: 0 +
-// width: 100vw renders edge to edge.
+//   1. .swoosh                        — shared positioning model
+//   2. .swooshBold / .swooshMutedUpper / .swooshMutedLower — placement vars
+//   3. .swooshMobile / .swooshDesktop — breakpoint visibility
+// Stack: swoosh (0) < image (1) < title (2).
 .swoosh {
   --swoosh-x: 0cqw;
   --swoosh-y: 0cqw;
@@ -47,15 +42,9 @@
   user-select: none;
 }
 
-// ── per-instance placement knobs ─────────────────────────────────
-// Override --swoosh-x/y/width on each placement to position it.
-
-// Each placement has mobile-first defaults and a desktop override block.
-// Dial in the cqw values per breakpoint to position each swoosh.
-
+// Bold-middle reads :root vars from theme/_layout.scss so the loader's
+// .swooshBold tracks any tweak.
 .swooshBold {
-  // Bold-middle swoosh placement is sourced from :root vars in
-  // theme/_layout.scss. Editing those keeps the loader's swoosh in sync.
   --swoosh-x: var(--swoosh-bold-x);
   --swoosh-y: var(--swoosh-bold-y);
   --swoosh-width: var(--swoosh-bold-width);
@@ -85,8 +74,6 @@
   }
 }
 
-// ── breakpoint visibility ────────────────────────────────────────
-
 .swooshMobile {
   @include desktop {
     display: none;
@@ -102,20 +89,11 @@
 }
 
 .subtitle {
-  // ── tunable knobs ───────────────────────────────────────────────
-  // Position in cqw so it tracks the title/image scale. Font size in
-  // rem so text size is constant. Absolute positioning means the
-  // subtitle adds no vertical space to the flex flow — it just
-  // floats at (subtitle-x, subtitle-top) and scales with the layout.
-  // --subtitle-x   : left offset.
-  // --subtitle-top : top offset.
+  // Offsets in cqw so subtitle position scales with the layout. Font size
+  // in rem stays constant.
   --subtitle-x: 18cqw;
   --subtitle-top: 10cqw;
-  // ────────────────────────────────────────────────────────────────
 
-  // In flex flow so it takes its own intrinsic height (no overlap with
-  // the title row). The cqw values become margins so they only control
-  // offset — no extra padding is added.
   position: relative;
   z-index: 1;
   margin: var(--subtitle-top) 0 0 var(--subtitle-x);
@@ -133,30 +111,26 @@
     font-size: 1rem;
     font-weight: 500;
     max-width: 40ch;
+    // All offsets stay in cqw — pixel margins here would let the swoosh
+    // (cqw of section) drift relative to the image (whose vertical position
+    // depends on this margin). Keep both in cqw so they track 1:1.
     --subtitle-x: 50cqw;
-    margin-bottom: 60px;
-    --subtitle-top: 50px;
+    --subtitle-top: 3.85cqw;
+    margin-bottom: 4.62cqw;
   }
 }
 
 .titleRow {
-  // ── shared knobs hoisted here so .title can reference --image-width ──
+  // Hoisted so .title can reference --image-width if needed.
   --image-x: 0cqw;
   --image-y: 12cqw;
   --image-width: 60cqw;
-  // ─────────────────────────────────────────────────────────────────────
 
-  // No z-index: leaving this row out of the stacking context lets title
-  // and image stack against the swoosh in the section's context.
   position: relative;
   width: 100%;
   container-type: inline-size;
 
   @include desktop {
-    // Flex centers title against image vertically AND centres the title +
-    // image pair horizontally inside the content area. Title is content-
-    // sized (no flex:1) so the composition stays compact + centred rather
-    // than spreading to fill the gutters.
     --title-gap: 2cqw;
     display: flex;
     align-items: center;
@@ -166,15 +140,12 @@
 }
 
 .title {
-  // ── tunable knobs (cqw = % of titleRow width) ───────────────────
-  // mobile: single-line h1 wraps "TELL BIG / TAILS" via max-width.
-  // --title-x    : distance from left edge of row.
-  // --title-y    : distance from top of row (negative pulls above).
-  // --title-size : font size for all words.
+  // Font sizes are stepped px (matches the official site, no fluid scaling).
+  // Position offsets stay in cqw so the title still tracks the layout.
   --title-x: 6cqw;
   --title-y: 0cqw;
-  --title-size: 17cqw;
-  // ────────────────────────────────────────────────────────────────
+  --title-size: 60px;
+  --title-size-big: var(--title-size);
 
   position: absolute;
   top: var(--title-y);
@@ -189,51 +160,52 @@
   text-transform: uppercase;
   color: var(--color-dark);
 
-  // Mobile only: wrap "TELL BIG TAILS" into TELL BIG / TAILS.
+  // Mobile only: forces "TELL BIG TAILS" to wrap as TELL BIG / TAILS.
   max-width: 5em;
 
-  @include desktop {
-    // ── desktop knobs (cqw of titleRow — same scale family as mobile) ──
-    // Both values are cqw of the title row, so as the row widens with
-    // viewport ALL three words grow at the same rate. TELL/TAILS sit
-    // close to mobile's 17cqw so the breakpoint transition is smooth.
-    // --title-size     : TELL / TAILS base size.
-    // --title-size-big : BIG size; pick a ratio of --title-size.
-    // --big-offset-x   : how far BIG translates right past the title
-    //                    block's right edge (visual only — no effect on
-    //                    row geometry).
-    --title-size: 14cqw;
-    --title-size-big: 22cqw;
-    --big-offset-x: 8cqw;
-    // ──────────────────────────────────────────────────────────────────
+  @media (min-width: 640px) {
+    --title-size: 100px;
+  }
 
-    // Title is a flex item — content-sized (sized to the widest word, BIG).
-    // titleRow's justify-content: center centres title+image as a pair.
-    // text-align: right pins TELL/TAILS' right edges next to the image
-    // (with --title-gap between). BIG translates right past that line to
-    // overlap the image without pushing the layout.
+  @include desktop {
+    --title-size: 118px;
+    --big-offset-x: 8cqw;
+
+    // Title is content-sized so titleRow's justify-content centres
+    // title+image as a pair. text-align:right pins TELL/TAILS to the
+    // image; BIG translates past that line via --big-offset-x.
     position: static;
     max-width: none;
     text-align: right;
   }
+
+  @media (min-width: 1024px) {
+    --title-size: 132px;
+    --title-size-big: 246px;
+  }
+
+  @media (min-width: 1280px) {
+    --title-size: 152px;
+    --title-size-big: 266px;
+  }
+
+  @media (min-width: 1920px) {
+    --title-size: 172px;
+    --title-size-big: 286px;
+  }
 }
 
 .word {
-  // mobile: words flow inline inside the h1 and wrap naturally.
   display: inline;
 
   @include desktop {
-    // desktop: each word on its own line, right-aligned by parent.
-    // line-height < 1 tightens the vertical gap between TELL/BIG/TAILS.
-    // Tune to taste (0.85 = noticeably tight, 1 = font default).
     display: block;
     line-height: 0.9;
   }
 }
 
-// Inner span exists so clip-path can apply to a non-inline element (clip-path
-// doesn't work on inline text). The reveal animation tweens this from
-// inset(100% 0 0 0) → inset(0% 0 0 0).
+// Inner span exists because clip-path doesn't apply to inline text — the
+// reveal tween animates inset(100% 0 0 0) → inset(0% 0 0 0) on this.
 .wordInner {
   display: inline-block;
   will-change: clip-path;
@@ -242,29 +214,25 @@
 .wordBig {
   @include desktop {
     font-size: var(--title-size-big);
-    // Visual-only offset right so BIG extends past TELL/TAILS' right edge
-    // and overlaps the image. Doesn't affect title block width or row flow.
+    // Visual-only offset — extends BIG past the title block's right edge
+    // to overlap the image without affecting row geometry.
     translate: var(--big-offset-x) 0;
+    // paint-order puts the stroke BEHIND the fill so glyph shapes aren't
+    // muddied (default order paints stroke over fill, thinning glyphs).
+    -webkit-text-stroke: 2px var(--color-cream);
+    paint-order: stroke fill;
   }
 }
 
-// .imageCard takes over the layout role that used to live on .image. It owns
-// the position/margin/size/aspect-ratio/border-radius. The <Image> inside
-// becomes an absolute fill (object-fit: cover). The intro tween scaleY's
-// this card from ~0.04 → 1 with back.out easing — the rounded corners stay
-// throughout because they're a property of the box itself, so it reads as
-// a thin horizontal pill blooming open into a full card.
 .imageCard {
-  // In normal flow (not absolute) so the row's height grows to fit it
-  // exactly — no trailing gap below. Knobs (--image-x / -y / -width)
-  // inherited from .titleRow.
   position: relative;
   display: block;
   margin-top: var(--image-y);
   margin-inline-start: auto;
   margin-inline-end: var(--image-x);
   z-index: 1;
-  transform-origin: center center;
+  // Bottom origin so the scaleY bloop grows upward (bottom edge anchored).
+  transform-origin: center bottom;
   will-change: transform;
 
   width: var(--image-width);
@@ -275,12 +243,12 @@
   background: var(--color-dark);
 
   @include desktop {
-    // titleRow becomes flex on desktop — vertical centring handled
-    // there, so margin-top isn't needed (would offset image off-centre).
+    // titleRow handles vertical centring on desktop — margin-top here
+    // would offset the image off-centre.
     margin-top: 0;
     margin-inline-start: 0;
     border-radius: 20px;
-    aspect-ratio: 1.65 / 1;
+    aspect-ratio: 4 / 3;
   }
 }
 
@@ -293,9 +261,6 @@
 }
 
 .imageCover {
-  // Dark overlay that fills the card. Tweened up (yPercent: -100) during
-  // the reveal phase to expose the photo underneath. Inherits the card's
-  // border-radius via overflow: hidden on the parent.
   position: absolute;
   inset: 0;
   background: var(--color-dark);
@@ -334,6 +299,9 @@
 
   @include desktop {
     --scroll-indicator-size: 107px;
+    margin-top: 1.5rem;
+    margin-left: 20cqi;
+    margin-right: 0;
   }
 }
 

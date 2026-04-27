@@ -48,5 +48,11 @@
     button {
       @include text.nav;
     }
+
+    // Solid (Contact Us) uses the display face instead of nav's Inter.
+    button[data-variant="solid"] {
+      font-family: var(--font-display), system-ui, sans-serif;
+      font-weight: 400;
+    }
   }
 }

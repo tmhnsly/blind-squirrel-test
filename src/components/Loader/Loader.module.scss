@@ -21,11 +21,9 @@
   will-change: transform;
 }
 
-// Mirrors the hero section's .container positioning context (same width +
-// padding-inline + container-type), so cqw inside resolves to the same value
-// as cqw inside the page's .swoosh.swooshBold. The top: var(--nav-height)
-// offset matches the page section's vertical start (below Nav) so swoosh-y
-// values resolve to the same screen Y as the page's.
+// Mirrors HeroSection's .container positioning context so cqw resolves to
+// the same px value here as it does on the page swoosh. top: nav-height
+// matches the page section's vertical start.
 .swooshContext {
   position: absolute;
   top: var(--nav-height);
@@ -40,7 +38,6 @@
   }
 }
 
-// Same shape rules as the page's .swoosh (positioning model only).
 .swoosh {
   --swoosh-x: 0cqw;
   --swoosh-y: 0cqw;
@@ -51,40 +48,24 @@
   left: var(--swoosh-x);
 
   width: var(--swoosh-width);
+  height: auto;
   pointer-events: none;
   user-select: none;
   will-change: clip-path;
-  // First-paint state — degenerate polygon collapsed to the left edge
-  // (zero area). GSAP interpolates the four vertices linearly into the
-  // full rectangle, producing a clean left-to-right wipe-on. Polygon
-  // vertices animate more reliably than inset() shorthand.
-  clip-path: polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%);
-
-  // Recolouring trick: SVG used as a mask, the box itself is a coloured
-  // rectangle. Result = the swoosh shape filled with --color-orange-soft.
-  background-color: var(--color-orange-soft);
-  mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
+  // Only the right inset is animated (top/bottom/left stay 0) so the clip
+  // rect is always full-height and stroke thickness is uniform mid-wipe.
+  clip-path: inset(0 100% 0 0);
 }
 
-// Reads the same :root vars (in theme/_layout.scss) as the page's .swooshBold,
-// so the loader and page swoosh stay in sync as the user tweaks placement.
+// Reads the same :root vars as HeroSection's .swooshBold so loader and
+// page swoosh stay aligned when those vars are tweaked.
 .swooshBold {
   --swoosh-x: var(--swoosh-bold-x);
   --swoosh-y: var(--swoosh-bold-y);
   --swoosh-width: var(--swoosh-bold-width);
 }
 
-// Breakpoint visibility + per-breakpoint mask file + intrinsic aspect.
-// aspect-ratio numbers must match each SVG's viewBox (same as the
-// width/height attrs on the page's <Image>) so the box height is correct.
 .swooshMobile {
-  aspect-ratio: 1080 / 800;
-  mask-image: url("/images/swooshes/bold-mobile.svg");
-  -webkit-mask-image: url("/images/swooshes/bold-mobile.svg");
-
   @include desktop {
     display: none;
   }
@@ -92,9 +73,6 @@
 
 .swooshDesktop {
   display: none;
-  aspect-ratio: 1920 / 800;
-  mask-image: url("/images/swooshes/bold-middle.svg");
-  -webkit-mask-image: url("/images/swooshes/bold-middle.svg");
 
   @include desktop {
     display: block;
